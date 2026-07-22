@@ -1,0 +1,2 @@
+What happens if a process calls set_priority() on itself? Does the change take effect immediately, or only after the next timer interrupt forces a reschedule?
+The priority field is updated immediately in the process's struct proc. However, if the calling process is already running, it continues executing until it yields the CPU, blocks, exits, or is preempted by a timer interrupt. The scheduler considers the new priority the next time it selects a RUNNABLE process, so the scheduling effect is visible on the next scheduling decision.

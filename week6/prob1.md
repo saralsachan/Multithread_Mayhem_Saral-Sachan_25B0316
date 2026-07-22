@@ -4,7 +4,7 @@
 
 **File:** `kernel/proc.c`  
 **Function:** `allocproc()`  
-**Approximate Line:** ______
+
 
 A new process is created when `fork()` calls `allocproc()`. The function scans the global `proc[]` table until it finds a process whose state is `UNUSED`. It acquires the process lock, allocates a PID, trapframe, page table, and kernel stack, initializes the process context, and prepares the process for execution. After `allocproc()` returns, the process has been allocated successfully but is not yet runnable.
 
@@ -14,7 +14,7 @@ A new process is created when `fork()` calls `allocproc()`. The function scans t
 
 **File:** `kernel/proc.c`  
 **Function:** `fork()`  
-**Approximate Line:** ______
+
 
 After the parent process has been copied successfully, `fork()` changes the child's state to `RUNNABLE`. This transition is performed while holding `p->lock` to prevent races with the scheduler or another CPU. Holding the lock guarantees that the scheduler cannot observe a partially initialized process.
 
@@ -24,7 +24,7 @@ After the parent process has been copied successfully, `fork()` changes the chil
 
 **File:** `kernel/proc.c`  
 **Function:** `scheduler()`  
-**Approximate Line:** ______
+
 
 The scheduler executes in an infinite loop on every CPU. At the beginning of each iteration, interrupts are enabled so that timer interrupts can occur. The scheduler scans every process in the process table, acquires each process's lock individually, and checks whether its state is `RUNNABLE`. If so, it changes the state to `RUNNING`, records the process in the CPU structure, and performs a context switch using `swtch()`. After the process later yields the CPU, execution resumes immediately after the `swtch()` call, the scheduler clears `c->proc`, releases the process lock, and continues scanning the process table.
 
@@ -34,7 +34,7 @@ The scheduler executes in an infinite loop on every CPU. At the beginning of eac
 
 **File:** `kernel/swtch.S`  
 **Function:** `swtch()`  
-**Approximate Line:** ______
+
 
 The `swtch()` routine performs the actual context switch by saving the currently executing context and restoring another. It saves the following registers into the old context:
 
@@ -50,7 +50,7 @@ It then restores the same registers from the new context. Since the return addre
 
 **File:** `kernel/proc.c`  
 **Function:** `scheduler()` / CPU Context  
-**Approximate Line:** ______
+
 
 After the scheduler switches to a process, the process executes normally in kernel mode and eventually returns to user mode. During this time, the scheduler itself is not running. Its register state has been saved inside the CPU's `context` (`c->context`). The scheduler remains suspended until the running process voluntarily yields or is interrupted by the timer.
 
@@ -63,7 +63,7 @@ After the scheduler switches to a process, the process executes normally in kern
 - `kernel/proc.c`
 
 **Functions:** `usertrap()`, `yield()`, `sched()`  
-**Approximate Lines:** ______
+
 
 When a timer interrupt occurs while a process is running, control enters `usertrap()`. Recognizing the timer interrupt, the kernel calls `yield()`. The process acquires its own lock, changes its state from `RUNNING` back to `RUNNABLE`, and invokes `sched()`. The `sched()` function performs another context switch by calling `swtch()`, saving the process's current register state and restoring the scheduler's saved context. As a result, execution resumes immediately after the previous `swtch()` inside the scheduler.
 
@@ -73,7 +73,7 @@ When a timer interrupt occurs while a process is running, control enters `usertr
 
 **File:** `kernel/proc.c`  
 **Function:** `scheduler()`  
-**Approximate Line:** ______
+
 
 Once the scheduler regains control, it resumes immediately after the `swtch()` call. It clears the CPU's current process pointer (`c->proc`), releases the lock of the process that just yielded, and continues scanning the process table. The next process whose state is `RUNNABLE` is selected, marked as `RUNNING`, and another context switch occurs. This repeated cycle forms xv6's round-robin scheduling policy.
 
